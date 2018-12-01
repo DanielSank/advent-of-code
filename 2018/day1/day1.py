@@ -2,12 +2,17 @@ import itertools
 
 
 def get_lines(filename):
+    "Read a file back as a list of lines."
     with open(filename) as f:
         lines = f.read().split("\n")
         return lines
 
 
 def process_lines(lines):
+    """Cumulatively sum the data until we find a repeated value.
+
+    The data are iterated over cyclicly until we find a repeaet.
+    """
     vals = set()
 
     val = 0
@@ -30,6 +35,7 @@ def process_lines(lines):
             return val
 
 
-def go(filename):
+def part_2(filename):
+    """Solve part 2 of the puzzle."""
     lines = get_lines(filename)
     return process_lines(lines)
