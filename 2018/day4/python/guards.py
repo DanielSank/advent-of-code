@@ -109,18 +109,14 @@ def part_1(filename):
 
 
 def part_2(filename):
-    events = get_sorted_events(filename)
-    guard_records = scan_events(events)
+    guard_records = scan_events(get_sorted_events(filename))
 
-    max_sleeps_on_minute = 0
-    sleepiest_guard = None
-    laziest_minute = None
+    max_slept_at_a_minute = 0
+    laziest_guard = None
 
     for guard_id, record in guard_records.items():
-        for minute, counts in record.sleep_record.items():
-            if counts > max_sleeps_on_minute:
-                max_sleeps_on_minute = counts
-                sleepiest_guard = guard_id
-                laziest_minute = minute
-    print("Guard: {}, minute: {}".format(sleepiest_guard, laziest_minute))
-    return sleepiest_guard * laziest_minute, guard_records
+        if record.time_at_laziest_minute > max_slept_at_a_minute:
+            laziest_guard = guard_id
+            max_slept_at_a_minute = record.time_at_laziest_minute
+
+    return laziest_guard * guard_records[laziest_guard].laziest_minute
