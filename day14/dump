@@ -1,0 +1,87 @@
+import collections
+
+
+def print_status(scores, elves):
+  msg = []
+  for i, score in enumerate(scores):
+    if elves[0] == i:
+      msg.append('({})'.format(score))
+    elif elves[1] == i:
+      msg.append('[{}]'.format(score))
+    else:
+      msg.append(str(score))
+  print(msg)
+
+
+def make_new_recipe_scores(a, b):
+  return [int(char) for char in str(a + b)]
+
+
+def iterate(scores, elves):
+  new_scores = make_new_recipe_scores(
+    scores[elves[0]],
+    scores[elves[1]],)
+  scores.extend(new_scores)
+  elves = advance_elves(scores, elves)
+  return scores, elves
+
+
+def advance_elves(scores, elves):
+  return [(elf + scores[elf] + 1) % len(scores) for elf in elves]
+
+
+def part_1(trials=293801):
+  scores = [3, 7]
+  elves = [0, 1]
+
+  while len(scores) < trials + 10:
+    scores, elves = iterate(scores, elves)
+  return ''.join(str(x) for x in scores[trials: trials+10])
+
+
+class Condition:
+  def __init__(self, target):
+    self.target = collections.deque(target)
+    self.buf = collections.deque()
+
+  def process_val(self, val):
+    self.buf.append(val)
+    if len(self.buf) > len(self.target):
+      self.buf.popleft()
+    if self.buf == self.target:
+      result = True
+    else:
+      result = False
+    return result
+
+
+def part_2(target, noisy=False):
+  scores = [3, 7]
+  elves = [0, 1]
+  condition = Condition(target)
+  done = False
+  iteration = 0
+
+  while 1:
+    for score in make_new_recipe_scores(scores[elves[0]], scores[elves[1]]):
+      scores.append(score)
+      done = condition.process_val(score)
+      if done:
+        break
+    elves = advance_elves(scores, elves)
+    if noisy:
+      print_status(scores, elves)
+    if done:
+      break
+    iteration += 1
+    if iteration % 100000 == 0:
+      print(iteration)
+  
+  return len(scores) - len(target)
+
+print(part_2([5, 1, 5, 8, 9]))
+print(part_2([0, 1, 2, 4, 5]))
+print(part_2([9, 2, 5, 1, 0]))
+print(part_2([5, 9, 4, 1, 4]))
+
+print(part_2([2, 9, 3, 8, 0, 1]))
